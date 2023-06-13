@@ -55,10 +55,10 @@ const RouteConfig = ({
           path='/register' 
           element={<Register/>} 
         />
-        <Route path='/contacts' component={<PrivateRoute/>}>
+        <Route component={<PrivateRoute/>}>
           <Route 
-            // path='/contacts' 
-            // element={<ContactsContainer user={user} history={history} />} 
+            path='/contacts'
+            element={<ContactsContainer user={user} history={history} />} 
           />
         </Route>
 

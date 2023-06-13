@@ -17,7 +17,7 @@ const Register = ({...rest}) => {
   const navigate = useNavigate();
 
   const handleChange = (event) => {
-    console.log('event target ', event.target)
+    // console.log('event target ', event.target)
 
     const { name, value } = event.target;
     switch (name) {
