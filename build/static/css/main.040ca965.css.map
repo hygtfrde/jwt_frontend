@@ -1,0 +1,1 @@
+{"version":3,"file":"static/css/main.040ca965.css","mappings":"AAAA,mBAII,qBAHA,eAAgB,CAChB,sBAAuB,CACvB,kBACqB","sources":["components/Pages/Profile/profile.scss"],"sourcesContent":[".profile-container {\n    overflow: hidden;\n    text-overflow: ellipsis;\n    white-space: normal;\n    word-wrap: break-word;\n}"],"names":[],"sourceRoot":""}

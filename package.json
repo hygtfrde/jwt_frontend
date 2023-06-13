@@ -1,0 +1,55 @@
+{
+  "name": "jwt_auth_mern",
+  "version": "0.1.1",
+  "engines": {
+    "node": "18.16.0"
+  },
+  "private": true,
+  "dependencies": {
+    "@reduxjs/toolkit": "^1.9.5",
+    "axios": "^1.4.0",
+    "path": "^0.12.7",
+    "puppeteer": "^20.5.0",
+    "react": "^18.2.0",
+    "react-app-rewired": "^2.2.1",
+    "react-dom": "^18.2.0",
+    "react-redux": "^8.0.7",
+    "react-router-dom": "^6.11.2",
+    "react-scripts": "^5.0.1",
+    "redux": "^4.2.1"
+  },
+  "scripts": {
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "webpack": "webpack --mode production --config webpack.config.js",
+    "test": "jest --config tests/jest.config.js --coverage --watchAll",
+    "eject": "react-scripts eject",
+    "improve": "npm outdated && npm upgrade",
+    "nuke": "rm -rf node_modules package-lock.json yarn.lock .npmrc .yarnrc .npm/_cacache && npm cache clean --force",
+    "rectify": "npm update && npm upgrade",
+    "probe": "retire --outputformat cyclonedx && node scripts/probe.js"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@babel/preset-react": "^7.22.3",
+    "@testing-library/react": "^14.0.0",
+    "babel-loader": "^9.1.2",
+    "babel-plugin-module-resolver": "^5.0.0",
+    "jest": "^27.5.1",
+    "node-sass": "^9.0.0",
+    "retire": "^4.3.1",
+    "webpack": "^5.85.1",
+    "webpack-cli": "^5.1.1"
+  }
+}
