@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { API_URL } from '../../constants';
+import LoadingModal from '../Layout/Loading';
 import { connect } from 'react-redux';
 import { setEmail, setPassword } from '../../redux/actions';
 
@@ -67,16 +68,21 @@ const Register = ({...rest}) => {
       password2: password2,
       signup_date: date
     };
+    setLoading(true);
     axios.post(`${API_URL}/auth/register`, newUser)
       .then(res => {
-        setLoading(true)
+        console.log('...processing register...')
         // TODO: autofill login form on next page
         navigate('/login');
+        console.log('Register complete')
       })
       .catch(err => {
         console.log('error in Register: ');
         setErrors({ post_err: err });
         console.error('---> ', err);
+      })
+      .finally(() => {
+        setLoading(false);
       });
   };
 
@@ -92,6 +98,7 @@ const Register = ({...rest}) => {
       ))} */}
       <section id="register" className="col-md-6 offset-md-3">
         <h2 className="mb-4">Register</h2>
+        {loading && <LoadingModal/>}
         <p style={{'borderBottom': '10px solid #343a40', 'width': '100%'}}>Sign up as a new user.</p>
 
         <form onSubmit={handleSubmit}>
