@@ -12,6 +12,7 @@ const Register = ({...rest}) => {
   const [password2, setPassword2] = useState('');
   const [date, setDate] = useState(null);
   const [errors, setErrors] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   const inputRefs = useRef({});
   const navigate = useNavigate();
@@ -68,6 +69,7 @@ const Register = ({...rest}) => {
     };
     axios.post(`${API_URL}/auth/register`, newUser)
       .then(res => {
+        setLoading(true)
         // TODO: autofill login form on next page
         navigate('/login');
       })
@@ -90,7 +92,7 @@ const Register = ({...rest}) => {
       ))} */}
       <section id="register" className="col-md-6 offset-md-3">
         <h2 className="mb-4">Register</h2>
-
+        <p style={{'borderBottom': '10px solid #343a40', 'width': '100%'}}>Sign up as a new user.</p>
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
