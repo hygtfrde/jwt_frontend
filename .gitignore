@@ -7,6 +7,9 @@ yarn-error.log*
 lerna-debug.log*
 .pnpm-debug.log*
 
+# Firebase
+.firebase
+
 # Build Assets (Production, Staging, etc.)
 build
 
