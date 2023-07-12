@@ -31,7 +31,7 @@ const NavBar = ({ user, logout }) => {
   );
 
   return (
-    <nav className="navbar navbar-expand-md navbar-dark bg-dark mb-5">
+    <nav className="navbar navbar-expand-md navbar-light bg-light mb-5">
       <div className="container">
         <NavLink className="navbar-brand" to="/">Auth API</NavLink>
         <button className="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarsExample04" aria-controls="navbarsExample04" aria-expanded="false" aria-label="Toggle navigation">
