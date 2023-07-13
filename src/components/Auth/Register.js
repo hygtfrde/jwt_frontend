@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { API_URL } from '../../constants';
 import LoadingModal from '../Layout/Loading';
+import './register_styles.css'
 import { connect } from 'react-redux';
 import { setEmail, setPassword } from '../../redux/actions';
 
