@@ -2,6 +2,9 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { API_URL } from '../../constants';
+import { updateSignInDate, handleSubmit200 } from '../../utilities/api/userApi';
+import { pingServer, timeoutPromise, waitPromise } from '../../utilities/api/pingServer';
+import LoadingModal from '../Layout/Loading';
 
 const Login = ({ 
   user, 
@@ -15,18 +18,16 @@ const Login = ({
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
+  const [loadingLogin, setLoadingLogin] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
   // Log User Info
   useEffect(() => {
-    if (isAuthenticated) {
-      console.log("LOGIN AUTH OK ...")
-    }
 
     console.info('========== LOGIN ==========');
     console.log('Login.js >>>>>>>>>>>>>> user: ', user);
-    console.log('Login.js >>>>>>>>>>>>>> isAuthenticated: ', isAuthenticated);
+    // console.log('Login.js >>>>>>>>>>>>>> isAuthenticated: ', isAuthenticated);
     console.info('===========================');
 
   }, [user, isAuthenticated]);
@@ -50,7 +51,7 @@ const Login = ({
     }
   };
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
 
     const userLogin = {
@@ -60,25 +61,61 @@ const Login = ({
 
     // console.log('userLogin ......... ', userLogin);
 
-    fetch(`${API_URL}/auth/login`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(userLogin)
-    })
-    .then(res => {
-      return res.json(); // Return the parsed JSON
-    })
-    .then(data => {
-      setCurrentUser(data.signedJwt);
-      navigate('/profile'); 
-      console.log('Sending user to profile!');
-    })
-    .catch(err => {
-      setError({ ...err });
-      console.error('error ===> ', error);
-    });
+    try {
+      const pingResponse = await pingServer(API_URL);
+  
+      if (pingResponse.success) {
+        const loginResponse = await fetch(`${API_URL}/auth/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(userLogin)
+        });
+  
+        if (loginResponse.ok) {
+          const data = await loginResponse.json();
+          setCurrentUser(data.signedJwt);
+          setLoadingLogin(false)
+          navigate('/profile');
+          console.log('Sending user to profile!');
+        } else {
+          setLoadingLogin(true);
+          setError({ message: 'Login failed' });
+          console.error('Login failed');
+        }
+      } else {
+        setLoadingLogin(true);
+        setError({ message: 'Server ping failed' });
+        console.error('Server ping failed');
+      }
+    } catch (error) {
+      setLoadingLogin(true);
+      setError({ message: error.message });
+      console.error('Error:', error);
+    }
+  
+
+    // fetch(`${API_URL}/auth/login`, {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json"
+    //   },
+    //   body: JSON.stringify(userLogin)
+    // })
+    // .then(res => {
+    //   return res.json(); // Return the parsed JSON
+    // })
+    // .then(data => {
+    //   setCurrentUser(data.signedJwt);
+    //   navigate('/profile'); 
+    //   console.log('Sending user to profile!');
+    // })
+    // .catch(err => {
+    //   setError({ ...err });
+    //   console.error('error ===> ', error);
+    // });
+    
   };
 
   return (
@@ -92,6 +129,8 @@ const Login = ({
           </button>
         </div>
       )} */}
+
+      {loadingLogin && <LoadingModal/>}
 
       <section id="login" className="col-md-6 offset-md-3">
         <h2 className="mb-4">Login</h2>

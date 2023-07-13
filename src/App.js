@@ -18,7 +18,7 @@ const App = ({...rest}) => {
     const checkToken = localStorage.getItem('uid');
     if (checkToken) setIsAuthenticated(true);
 
-    if (isAuthenticated) UserApi.updateSigninDate();
+    if (isAuthenticated) UserApi.updateSignInDate();
 
     console.info('========== APP ==========')
     console.log('App.js ========> user: ', user)
