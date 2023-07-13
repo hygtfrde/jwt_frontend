@@ -49,11 +49,7 @@ const Register = ({...rest}) => {
   const handleSubmit = (event) => {
     event.preventDefault();
 
-    // console.log('username ', username);
-    // console.log('email ', email);
-    // console.log('password ', password);
-    // console.log('password2 ', password2);
-
+    // validate password inputs match
     if (password === password2) {
       console.log('user input OK')
     } else if (password !== password2) {

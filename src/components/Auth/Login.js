@@ -28,6 +28,7 @@ const Login = ({
     console.log('Login.js >>>>>>>>>>>>>> user: ', user);
     console.log('Login.js >>>>>>>>>>>>>> isAuthenticated: ', isAuthenticated);
     console.info('===========================');
+
   }, [user, isAuthenticated]);
 
   const registerInputRef = (name) => (ref) => {
@@ -57,7 +58,7 @@ const Login = ({
       password: password
     };
 
-    console.log('userLogin ......... ', userLogin);
+    // console.log('userLogin ......... ', userLogin);
 
     fetch(`${API_URL}/auth/login`, {
       method: "POST",

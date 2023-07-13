@@ -16,7 +16,7 @@ const UserApi = {
         })
         .catch(err => {
           // Handle any errors here
-          console.error(err);
+          console.error('updateSigninDate error: ', err);
         });
     }
 }

@@ -18,8 +18,8 @@ const RouteConfig = ({
   const location = useLocation();
 
   const PrivateRoute = ({ component: Component, ...rest }) => {
-    if (!isAuthenticated) {
-      console.error('No authentication found. Redirecting...')
+    if (!isAuthenticated || !user) {
+      console.error('No authentication found. Redirecting...');
       return <Navigate to="/login" routeState={{ from: location }} />;
     } else {
       return (
@@ -28,13 +28,14 @@ const RouteConfig = ({
           <Route
             {...rest}
             render={(props) =>
-              (user && isAuthenticated) ? <Component {...props} /> : <Navigate to="/login" />
+              isAuthenticated ? <Component {...props} /> : <Navigate to="/login" />
             }
           />
         </>
-      )
+      );
     }
   };
+  
 
   return (
     <Routes>
