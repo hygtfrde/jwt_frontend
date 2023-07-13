@@ -22,7 +22,6 @@ const App = ({...rest}) => {
 
     console.info('========== APP ==========')
     console.log('App.js ========> user: ', user)
-    console.log('App.js ========> isAuthenticated: ', isAuthenticated)
     console.info('=========================')
   }, [user, isAuthenticated]);
 
