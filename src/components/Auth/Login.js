@@ -3,7 +3,7 @@ import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { API_URL } from '../../constants';
 import { updateSignInDate, handleSubmit200 } from '../../utilities/api/userApi';
-import { pingServer, timeoutPromise, waitPromise } from '../../utilities/api/pingServer';
+import { pingServerDefault, waitPromise } from '../../utilities/api/pingServer';
 import LoadingModal from '../Layout/Loading';
 
 const Login = ({ 
@@ -27,7 +27,6 @@ const Login = ({
 
     console.info('========== LOGIN ==========');
     console.log('Login.js >>>>>>>>>>>>>> user: ', user);
-    // console.log('Login.js >>>>>>>>>>>>>> isAuthenticated: ', isAuthenticated);
     console.info('===========================');
 
   }, [user, isAuthenticated]);
@@ -54,81 +53,85 @@ const Login = ({
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    if (!user || !password) {
+      setError({message: "no username or password input"})
+    }
     const userLogin = {
       email: email,
       password: password
     };
 
-    // console.log('userLogin ......... ', userLogin);
-
     try {
-      const pingResponse = await pingServer(API_URL);
-  
+      const pingResponse = await pingServerDefault(API_URL);
+      console.log('pingResponse ---> ', pingResponse)
+      if (pingResponse.success === false) {
+        console.log('waiting 1 minute for retry');
+        setLoadingLogin(true);
+        await waitPromise;
+      }
       if (pingResponse.success) {
-        const loginResponse = await fetch(`${API_URL}/auth/login`, {
+        // const loginResponse = await fetch(`${API_URL}/auth/login`, {
+        //   method: "POST",
+        //   headers: {
+        //     "Content-Type": "application/json"
+        //   },
+        //   body: JSON.stringify(userLogin)
+        // });
+  
+        // if (loginResponse.ok) {
+        //   const data = await loginResponse.json();
+        //   setCurrentUser(data.signedJwt);
+        //   setLoadingLogin(false)
+        //   navigate('/profile');
+        //   console.log('Sending user to profile!');
+        // } 
+        // else {
+        //   setError({ message: 'Login failed ... Server ping failed' });
+        //   setLoading(false);
+        //   console.error('Login failed to ping server in time');
+        // }
+
+
+        fetch(`${API_URL}/auth/login`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json"
           },
           body: JSON.stringify(userLogin)
-        });
-  
-        if (loginResponse.ok) {
-          const data = await loginResponse.json();
+        })
+        .then(res => {
+          return res.json(); // Return the parsed JSON
+        })
+        .then(data => {
           setCurrentUser(data.signedJwt);
-          setLoadingLogin(false)
-          navigate('/profile');
+          navigate('/profile'); 
           console.log('Sending user to profile!');
-        } else {
-          setLoadingLogin(true);
-          setError({ message: 'Login failed' });
-          console.error('Login failed');
-        }
-      } else {
-        setLoadingLogin(true);
-        setError({ message: 'Server ping failed' });
-        console.error('Server ping failed');
+        })
+        .catch(err => {
+          setError({ ...err });
+          console.error('error ===> ', error);
+        });
       }
-    } catch (error) {
+    } 
+    catch (error) {
       setLoadingLogin(true);
       setError({ message: error.message });
       console.error('Error:', error);
     }
-  
-
-    // fetch(`${API_URL}/auth/login`, {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json"
-    //   },
-    //   body: JSON.stringify(userLogin)
-    // })
-    // .then(res => {
-    //   return res.json(); // Return the parsed JSON
-    // })
-    // .then(data => {
-    //   setCurrentUser(data.signedJwt);
-    //   navigate('/profile'); 
-    //   console.log('Sending user to profile!');
-    // })
-    // .catch(err => {
-    //   setError({ ...err });
-    //   console.error('error ===> ', error);
-    // });
     
   };
 
   return (
     <div className="row">
 
-      {/* {this.state.error && (
+      {error && (
         <div className="alert alert-danger alert-dismissible fade show" style={{width: '100%'}} role="alert">
-          {this.state.error}
+          {error.message}
           <button type="button" className="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-      )} */}
+      )}
 
       {loadingLogin && <LoadingModal/>}
 

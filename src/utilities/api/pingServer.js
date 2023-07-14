@@ -1,59 +1,40 @@
 import React from 'react';
 import {API_URL} from '@/constants';
 
-export const pingServer = async (API_URL) => {
+export const pingServerDefault = async (API_URL) => {
     const timeoutPromise = new Promise((_, reject) => {
       setTimeout(() => {
-        reject(new Error('Timeout 15'));
-      }, 15000);
+        reject(new Error('Timeout: Server not responding'));
+      }, 20000);
     });
   
-    return Promise.race([
-      fetch(API_URL).then((response) => {
-        if (response.ok) {
-          return { success: true };
-        } else {
-          return { success: false };
-        }
-      }),
-      timeoutPromise,
-    ]);
-  };
+    try {
+      const response = await Promise.race([
+        fetch(API_URL),
+        timeoutPromise,
+      ]);
 
-  export const pingServerDefault = async (API_URL) => {
-    const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => {
-        reject(new Error('Timeout 30'));
-      }, 30000);
-    });
-    return Promise.race([
-      fetch(API_URL).then((response) => {
-        if (response.ok) {
-          return { success: true };
-        } else {
-          return { success: false };
-        }
-      }),
-      timeoutPromise,
-    ]);
+      console.log('......... ', response)
+  
+      if (response.ok) {
+        return { success: true };
+      } else {
+        return { success: false };
+      }
+    } catch (error) {
+        console.log('......... ', error)
+        throw error;
+    }
   };
   
   
-  
-
-export const timeoutPromise = new Promise((_, reject) => {
-    setTimeout(() => {
-        // Reject with timeout error
-        reject(new Error('Timeout'));
-    }, 45000); // 45 seconds
-});
 
 export const waitPromise = new Promise((resolve) => {
     // Wait for 1 minute before resolving
     setTimeout(() => {
-        // Resolve after 2 minutes
+        // Resolve after 1 minutes
         resolve();
-    }, 120000);
+    }, 60000);
 });
 
 const handleSubmit = async () => {
