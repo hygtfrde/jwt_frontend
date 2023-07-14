@@ -66,8 +66,9 @@ const Login = ({
     };
   
     try {
+      setLoadingLogin(true);
       const pingResponse = await pingServerDefault(RENDER_EXPRESS_API);
-      console.log('pingResponse ---> ', pingResponse);
+      // console.log('pingResponse ---> ', pingResponse);
   
       if (!pingResponse.success) {
         setError({message: "ping timed out, try again ..."});
@@ -76,7 +77,6 @@ const Login = ({
         return
       } 
       else if (pingResponse.success) {  
-        setLoadingLogin(true);
         setPingState(true); 
         
         try {
@@ -101,10 +101,12 @@ const Login = ({
           } else {
             const error = await response.json();
             setError({ ...error });
+            setLoadingLogin(false);
             console.error('auth/login error: ', error);
           }
         } catch (error) {
           console.error('An error occurred during the auth/login request: ', error);
+          setLoadingLogin(false);
         }
         
       }
