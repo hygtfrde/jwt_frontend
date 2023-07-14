@@ -30,11 +30,9 @@ export const pingServerDefault = async (API_URL) => {
   
 
 export const waitPromise = new Promise((resolve) => {
-    // Wait for 1 minute before resolving
     setTimeout(() => {
-        // Resolve after 1 minutes
         resolve();
-    }, 60000);
+    }, 10000);
 });
 
 const handleSubmit = async () => {

@@ -5,6 +5,7 @@ import { API_URL } from '../../constants';
 import { updateSignInDate, handleSubmit200 } from '../../utilities/api/userApi';
 import { pingServerDefault, waitPromise } from '../../utilities/api/pingServer';
 import LoadingModal from '../Layout/Loading';
+import './login_styles.css';
 
 const Login = ({ 
   user, 
@@ -19,16 +20,16 @@ const Login = ({
   const [password, setPassword] = useState('');
   const [error, setError] = useState(null);
   const [loadingLogin, setLoadingLogin] = useState(false);
+  const [continueLogin, setContinueLogin] = useState(false);
+  const [pingState, setPingState] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
 
   // Log User Info
   useEffect(() => {
-
     console.info('========== LOGIN ==========');
     console.log('Login.js >>>>>>>>>>>>>> user: ', user);
     console.info('===========================');
-
   }, [user, isAuthenticated]);
 
   const registerInputRef = (name) => (ref) => {
@@ -53,9 +54,14 @@ const Login = ({
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!user || !password) {
-      setError({message: "no username or password input"})
+    console.log('user: ', user)
+    console.log('email: ', email)
+    console.log('password: ', password)
+    if (!email || !password) {
+      setError({message: "no email or password input"});
+      return;
     }
+
     const userLogin = {
       email: email,
       password: password
@@ -65,33 +71,22 @@ const Login = ({
       const pingResponse = await pingServerDefault(API_URL);
       console.log('pingResponse ---> ', pingResponse)
       if (pingResponse.success === false) {
-        console.log('waiting 1 minute for retry');
+        setPingState(false);
         setLoadingLogin(true);
-        await waitPromise;
+        while (pingState === false) {
+          await waitPromise;
+          if (waitPromise.success) {
+            console.log('done waiting...')
+            setPingState(true);
+            setContinueLogin(true);
+          }
+        }
       }
-      if (pingResponse.success) {
-        // const loginResponse = await fetch(`${API_URL}/auth/login`, {
-        //   method: "POST",
-        //   headers: {
-        //     "Content-Type": "application/json"
-        //   },
-        //   body: JSON.stringify(userLogin)
-        // });
-  
-        // if (loginResponse.ok) {
-        //   const data = await loginResponse.json();
-        //   setCurrentUser(data.signedJwt);
-        //   setLoadingLogin(false)
-        //   navigate('/profile');
-        //   console.log('Sending user to profile!');
-        // } 
-        // else {
-        //   setError({ message: 'Login failed ... Server ping failed' });
-        //   setLoading(false);
-        //   console.error('Login failed to ping server in time');
-        // }
+      console.log('=========> continueLogin ', continueLogin)
+      console.log('=========> pingState ', pingState)
 
 
+      if (continueLogin && pingState) {
         fetch(`${API_URL}/auth/login`, {
           method: "POST",
           headers: {
@@ -110,6 +105,7 @@ const Login = ({
         .catch(err => {
           setError({ ...err });
           console.error('error ===> ', error);
+          navigate('/'); 
         });
       }
     } 
@@ -122,51 +118,54 @@ const Login = ({
   };
 
   return (
-    <div className="row">
+    <div>
+      <div className="login-wrap">
+        {loadingLogin && <LoadingModal/>}
+      </div>
+      <div className="row">
 
-      {error && (
-        <div className="alert alert-danger alert-dismissible fade show" style={{width: '100%'}} role="alert">
-          {error.message}
-          <button type="button" className="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-        </div>
-      )}
-
-      {loadingLogin && <LoadingModal/>}
-
-      <section id="login" className="col-md-6 offset-md-3">
-        <h2 className="mb-4">Login</h2>
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label htmlFor="email">Email</label>
-            <input 
-              type="email" 
-              id="email" 
-              name="email" 
-              value={email} 
-              onChange={handleChange} 
-              className="form-control form-control-lg" 
-              placeholder="example@example.com"
-              ref={registerInputRef('email')}
-            />
+        {error && (
+          <div className="alert alert-danger alert-dismissible fade show" style={{width: '100%'}} role="alert">
+            {error.message}
+            <button type="button" className="close" data-dismiss="alert" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
           </div>
-          <div className="form-group">
-            <label htmlFor="email">Password</label>
-            <input 
-              type="password" 
-              id="password" 
-              name="password" 
-              value={password}
-              onChange={handleChange} 
-              className="form-control form-control-lg"
-              ref={registerInputRef('password')}
-            />
-          </div>
-          <button type="submit" className="btn btn-primary float-right">Login</button>
-        </form>
-      </section>
+        )}
 
+        <section id="login" className="col-md-6 offset-md-3">
+          <h2 className="mb-4">Login</h2>
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <label htmlFor="email">Email</label>
+              <input 
+                type="email" 
+                id="email" 
+                name="email" 
+                value={email} 
+                onChange={handleChange} 
+                className="form-control form-control-lg" 
+                placeholder="example@example.com"
+                ref={registerInputRef('email')}
+              />
+            </div>
+            <div className="form-group">
+              <label htmlFor="email">Password</label>
+              <input 
+                type="password" 
+                id="password" 
+                name="password" 
+                value={password}
+                onChange={handleChange} 
+                className="form-control form-control-lg"
+                ref={registerInputRef('password')}
+              />
+            </div>
+            <button type="submit" className="btn btn-primary float-right">Login</button>
+          </form>
+        </section>
+
+      </div>
     </div>
   );
 };
