@@ -1,62 +1,52 @@
-import React from 'react';
-import {API_URL} from '@/constants';
+import {RENDER_EXPRESS_API} from '@/constants';
 
-export const pingServerDefault = async (API_URL) => {
-    const timeoutPromise = new Promise((_, reject) => {
-      setTimeout(() => {
-        reject(new Error('Timeout: Server not responding'));
-      }, 20000);
-    });
-  
+export const pingServerDefault = async (RENDER_EXPRESS_API) => {
+
+  console.log('Attempt to ping API: ', RENDER_EXPRESS_API)
+
+  const controller = new AbortController();
+  const signal = controller.signal;
+
+  const ping = async () => {
     try {
-      const response = await Promise.race([
-        fetch(API_URL),
-        timeoutPromise,
-      ]);
+      const response = await fetch(RENDER_EXPRESS_API, { signal });
 
-      console.log('......... ', response)
-  
       if (response.ok) {
+        console.log('Ping successful');
         return { success: true };
       } else {
-        return { success: false };
+        console.error('Ping server timed out');
+        throw new Error('Timeout: Server not responding');
       }
     } catch (error) {
-        console.log('......... ', error)
-        throw error;
+      console.error('Ping error:', error);
+      throw new Error('Timeout: Server not responding');
     }
   };
-  
-  
+
+  const pingWithRetry = async () => {
+    try {
+      const result = await ping();
+      if (result.success) {
+        return result;
+      } else {
+        // Retry after 10 seconds
+        await new Promise(resolve => setTimeout(resolve, 10000));
+        return pingWithRetry();
+      }
+    } catch (error) {
+      throw error;
+    }
+  };
+
+  return pingWithRetry();
+};
+
+
 
 export const waitPromise = new Promise((resolve) => {
     setTimeout(() => {
         resolve();
-    }, 10000);
+    }, 120000);
 });
 
-const handleSubmit = async () => {
-    try {
-      // Perform the ping request and wait for either success or timeout
-      const response = await Promise.race([pingServer(), timeoutPromise]);
-  
-      // Check the response
-      if (response.success) {
-        // Proceed with axios post
-        await axios.post(`${API_URL}/user`, userObject);
-        console.log('Post request success');
-      } else {
-        // Timeout occurred, wait for 1 minute before retrying
-        console.log('Timeout occurred. Waiting for 1 minute...');
-        await waitPromise;
-        console.log('Retry post request...');
-        await axios.post(`${API_URL}/user`, userObject);
-        console.log('Post request success');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
-
-      
-  

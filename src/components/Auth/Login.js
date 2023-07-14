@@ -27,13 +27,13 @@ const Login = ({
 
   // Log User Info
   useEffect(() => {
-    console.info('========== LOGIN ==========');
-    console.log('Login.js >>>>>>>>>>>>>> user: ', user);
-    console.info('===========================');
+    // console.info('========== LOGIN ==========');
+    // console.log('Login.js >>>>>>>>>>>>>> user: ', user);
+    // console.info('===========================');
   }, [user, isAuthenticated]);
 
+  // Store the ref in the inputRefs object using the input name
   const registerInputRef = (name) => (ref) => {
-    // Store the ref in the inputRefs object using the input name
     inputRefs.current[name] = ref;
   };
 
@@ -53,69 +53,59 @@ const Login = ({
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    console.log('user: ', user)
-    console.log('email: ', email)
-    console.log('password: ', password)
+  
+    console.log('user: ', user);
+    console.log('email: ', email);
+    console.log('password: ', password);
+  
     if (!email || !password) {
-      setError({message: "no email or password input"});
+      setError({ message: "No email or password input" });
+      setLoadingLogin(false);
       return;
     }
-
+  
     const userLogin = {
       email: email,
       password: password
     };
-
+  
     try {
       const pingResponse = await pingServerDefault(API_URL);
-      console.log('pingResponse ---> ', pingResponse)
-      if (pingResponse.success === false) {
-        setPingState(false);
+      console.log('pingResponse ---> ', pingResponse);
+  
+      if (!pingResponse.success) {
         setLoadingLogin(true);
-        while (pingState === false) {
-          await waitPromise;
-          if (waitPromise.success) {
-            console.log('done waiting...')
-            setPingState(true);
-            setContinueLogin(true);
-          }
-        }
+        setPingState(false);
+        console.log('Server ping failed');
+        return;
       }
-      console.log('=========> continueLogin ', continueLogin)
-      console.log('=========> pingState ', pingState)
-
-
-      if (continueLogin && pingState) {
-        fetch(`${API_URL}/auth/login`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(userLogin)
-        })
-        .then(res => {
-          return res.json(); // Return the parsed JSON
-        })
+  
+      fetch(`${API_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          authorization: `Bearer ${localStorage.uid}`
+        },
+        body: JSON.stringify(userLogin)
+      })
+        .then(res => res.json())
         .then(data => {
           setCurrentUser(data.signedJwt);
-          navigate('/profile'); 
+          navigate('/profile');
           console.log('Sending user to profile!');
         })
         .catch(err => {
           setError({ ...err });
           console.error('error ===> ', error);
-          navigate('/'); 
+          navigate('/');
         });
-      }
-    } 
-    catch (error) {
-      setLoadingLogin(true);
+    } catch (error) {
+      setLoadingLogin(false);
       setError({ message: error.message });
       console.error('Error:', error);
     }
-    
   };
+  
 
   return (
     <div>
