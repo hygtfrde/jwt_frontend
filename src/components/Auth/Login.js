@@ -79,26 +79,34 @@ const Login = ({
         setLoadingLogin(true);
         setPingState(true); 
         
-        fetch(`${API_URL}/auth/login`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify(userLogin)
-        })
-        .then(res => {
-          console.log('res auth/login: ', res)
-          return res.json(); // Return the parsed JSON
-        })
-        .then(data => {
-          setCurrentUser(data.signedJwt);
-          navigate('/profile'); 
-          console.log('Sending user to profile!');
-        })
-        .catch(err => {
-          setError({ ...err });
-          console.error('auth/login error ===> ', error);
-        });
+        try {
+          const response = await fetch(`${API_URL}/auth/login`, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify(userLogin)
+          });
+
+          if (!response.ok) {
+            setError({message: "Login incorrect, retry again."});
+            setLoadingLogin(false);
+            return;
+          }
+          else if (response.ok) {
+            const data = await response.json();
+            setCurrentUser(data.signedJwt);
+            navigate('/profile');
+            console.log('Sending user to profile!');
+          } else {
+            const error = await response.json();
+            setError({ ...error });
+            console.error('auth/login error: ', error);
+          }
+        } catch (error) {
+          console.error('An error occurred during the auth/login request: ', error);
+        }
+        
       }
     } 
     catch (error) {
