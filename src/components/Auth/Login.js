@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import { Navigate, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
-import { API_URL } from '../../constants';
+import { API_URL, RENDER_EXPRESS_API } from '../../constants';
 import { updateSignInDate, handleSubmit200 } from '../../utilities/api/userApi';
 import { pingServerDefault, waitPromise } from '../../utilities/api/pingServer';
 import LoadingModal from '../Layout/Loading';
@@ -66,44 +66,51 @@ const Login = ({
     };
   
     try {
-      const pingResponse = await pingServerDefault(API_URL);
+      const pingResponse = await pingServerDefault(RENDER_EXPRESS_API);
       console.log('pingResponse ---> ', pingResponse);
   
       if (!pingResponse.success) {
-        setLoadingLogin(true);
+        setError({message: "ping timed out, try again ..."});
+        setLoadingLogin(false);
         setPingState(false);
-        console.log('Waiting until next ping ...');
-        setError({message: "ping timed out, waiting ..."})
-        await waitPromise();
-      }
-  
-      fetch(`${API_URL}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          authorization: `Bearer ${localStorage.uid}`
-        },
-        body: JSON.stringify(userLogin)
-      })
-        .then(res => res.json())
+        return
+      } 
+      else if (pingResponse.success) {  
+        setLoadingLogin(true);
+        setPingState(true); 
+        
+        fetch(`${API_URL}/auth/login`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(userLogin)
+        })
+        .then(res => {
+          console.log('res auth/login: ', res)
+          return res.json(); // Return the parsed JSON
+        })
         .then(data => {
           setCurrentUser(data.signedJwt);
-          navigate('/profile');
+          navigate('/profile'); 
           console.log('Sending user to profile!');
         })
         .catch(err => {
           setError({ ...err });
-          console.error('auth/login err ===> ', err);
-          navigate('/');
+          console.error('auth/login error ===> ', error);
         });
+      }
     } 
     catch (error) {
       setLoadingLogin(false);
       setError({ message: error.message });
-      console.error('Error:', error);
+      console.error('Other Error:', error);
     }
   };
   
+  const closeErrorButton = () => {
+    setError(!error);
+  }
 
   return (
     <div>
@@ -115,7 +122,7 @@ const Login = ({
         {error && (
           <div className="alert alert-danger alert-dismissible fade show" style={{width: '100%'}} role="alert">
             {error.message}
-            <button type="button" className="close" data-dismiss="alert" aria-label="Close">
+            <button onClick={closeErrorButton} type="button" className="close" data-dismiss="alert" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
           </div>

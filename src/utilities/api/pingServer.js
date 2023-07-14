@@ -1,22 +1,27 @@
-import {RENDER_EXPRESS_API} from '@/constants';
+export const pingServerDefault = async (LIVE_URL) => {
+  try {
+    const response = await fetch(LIVE_URL, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
 
-export const pingServerDefault = async (RENDER_EXPRESS_API) => {
+    console.log('Ping Response: ', response);
 
-  fetch(`${RENDER_EXPRESS_API}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json"
+    if (response.ok) {
+      console.log('Ping is OK');
+      return { success: true };
+    } else {
+      console.log('Ping failure');
+      return { success: false };
     }
-  })
-  .then(res => {
-    console.log('res => ', res)
-    res.json();
-  })
-  .catch(err => {
-    console.error('error pinging API ===> ', err);
-  });
-
+  } catch (error) {
+    console.error('Other ping error: ', error);
+    return { success: false };
+  }
 };
+
 
 
 export const waitPromise = new Promise((resolve) => {
