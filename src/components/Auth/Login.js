@@ -54,10 +54,6 @@ const Login = ({
   const handleSubmit = async (event) => {
     event.preventDefault();
   
-    console.log('user: ', user);
-    console.log('email: ', email);
-    console.log('password: ', password);
-  
     if (!email || !password) {
       setError({ message: "No email or password input" });
       setLoadingLogin(false);
@@ -76,8 +72,9 @@ const Login = ({
       if (!pingResponse.success) {
         setLoadingLogin(true);
         setPingState(false);
-        console.log('Server ping failed');
-        return;
+        console.log('Waiting until next ping ...');
+        setError({message: "ping timed out, waiting ..."})
+        await waitPromise();
       }
   
       fetch(`${API_URL}/auth/login`, {
@@ -96,10 +93,11 @@ const Login = ({
         })
         .catch(err => {
           setError({ ...err });
-          console.error('error ===> ', error);
+          console.error('auth/login err ===> ', err);
           navigate('/');
         });
-    } catch (error) {
+    } 
+    catch (error) {
       setLoadingLogin(false);
       setError({ message: error.message });
       console.error('Error:', error);
