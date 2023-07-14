@@ -56,20 +56,20 @@ const RouteConfig = ({
           path='/register' 
           element={<Register/>} 
         />
-        <Route component={<PrivateRoute/>}>
+        {isAuthenticated && <Route component={<PrivateRoute/>}>
           <Route 
             path='/contacts'
             element={<ContactsContainer user={user} history={history} />} 
           />
-        </Route>
+        </Route>}
 
-        <Route component={<PrivateRoute/>}>
+        {isAuthenticated && <Route component={<PrivateRoute/>}>
           <Route 
             path='/profile' 
             element={<ProfileContainer user={user} history={history} />} 
           />
           <Route/>
-        </Route>
+        </Route>}
 
         <Route path="*" element={<NotFound/>} />
 
