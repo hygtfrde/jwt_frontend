@@ -21,7 +21,7 @@ const App = ({...rest}) => {
     if (isAuthenticated) UserApi.updateSignInDate();
 
     console.info('========== APP ==========')
-    console.log('App.js ========> user: ', user)
+    console.log('========> user: ', user)
     console.info('=========================')
   }, [user, isAuthenticated]);
 

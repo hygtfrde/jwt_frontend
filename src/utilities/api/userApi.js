@@ -12,7 +12,7 @@ const UserApi = {
       .then(res => res.json())
       .then(data => {
         // Handle the response data here
-        console.log(data);
+        // console.log(data);
         return data; // Return the data to be used in the subsequent POST request
       })
       .catch(err => {
@@ -36,7 +36,7 @@ const UserApi = {
       .then(res => res.json())
       .then(data => {
         // Handle the response data here
-        console.log(data);
+        // console.log(data);
       })
       .catch(err => {
         // Handle any errors here
@@ -69,7 +69,7 @@ const UserApi = {
     .then(data => {
       setCurrentUser(data.signedJwt);
       navigate('/profile'); 
-      console.log('Sending user to profile!');
+      // console.log('Sending user to profile!');
     })
     .catch(err => {
       setError({ ...err });

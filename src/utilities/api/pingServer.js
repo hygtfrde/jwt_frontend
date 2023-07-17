@@ -7,10 +7,10 @@ export const pingServerDefault = async (LIVE_URL) => {
       }
     });
 
-    console.log('Ping Response: ', response);
+    // console.log('Ping Response: ', response);
 
     if (response.ok) {
-      console.log('Ping is OK');
+      // console.log('Ping is OK');
       return { success: true };
     } else {
       console.log('Ping failure');
@@ -28,6 +28,6 @@ export const waitPromise = new Promise((resolve) => {
     setTimeout(() => {
         resolve();
     }, 20000);
-    console.log('DONE WAITING!')
+    // console.log('set timeout counter')
 });
 

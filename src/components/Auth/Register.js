@@ -51,7 +51,7 @@ const Register = ({...rest}) => {
 
     // validate password inputs match
     if (password === password2) {
-      console.log('user input OK')
+      // console.log('user input OK')
     } else if (password !== password2) {
       console.error('passwords do not match')
       return;
@@ -68,10 +68,10 @@ const Register = ({...rest}) => {
     setLoading(true);
     axios.post(`${API_URL}/auth/register`, newUser)
       .then(res => {
-        console.log('...processing register...')
+        // console.log('...processing register...')
         // TODO: autofill login form on next page
         navigate('/login');
-        console.log('Register complete')
+        // console.log('Register complete')
       })
       .catch(err => {
         console.log('error in Register: ');
