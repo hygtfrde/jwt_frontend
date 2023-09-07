@@ -16,13 +16,19 @@ const App = ({...rest}) => {
   useEffect(() => {
     // Check if authentication token exists in localStorage
     const checkToken = localStorage.getItem('uid');
-    if (checkToken) setIsAuthenticated(true);
+    if (checkToken) {
+      setIsAuthenticated(true);
+      if (!user) {
+        alert('auth token is valid, but user data timed out or failed to fetch')
+      }
+    }
 
     if (isAuthenticated) UserApi.updateSignInDate();
 
-    // console.info('========== APP ==========')
-    console.log('========> user: ', user)
-    // console.info('=========================')
+    // console.log('========> user: ', user)
+    // if user is null, but auth token is in storage,
+    // then refetch user data for profile display.
+
   }, [user, isAuthenticated]);
 
   const setCurrentUser = (token) => {
