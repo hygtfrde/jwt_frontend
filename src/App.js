@@ -20,9 +20,9 @@ const App = ({...rest}) => {
 
     if (isAuthenticated) UserApi.updateSignInDate();
 
-    console.info('========== APP ==========')
+    // console.info('========== APP ==========')
     console.log('========> user: ', user)
-    console.info('=========================')
+    // console.info('=========================')
   }, [user, isAuthenticated]);
 
   const setCurrentUser = (token) => {
