@@ -1,0 +1,5 @@
+.mern-home-img {
+    background-image: url('./mern.png');
+    min-height: 300px;
+    background-repeat: no-repeat;
+}
